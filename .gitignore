@@ -35,3 +35,19 @@ jejak_jati-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Environment variables
+.env
+.env.*
+
+# Editor
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Vim
+*.swp
+*.swo
+
+*.Zone.Identifier

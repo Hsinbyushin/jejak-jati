@@ -103,3 +103,55 @@
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
 /* This file is for your main application CSS */
+
+/* ==========================================================
+   Jejak Jati Design Tokens
+   ========================================================== */
+
+:root {
+  /* Brand */
+
+  --jj-orange: #ff7a18;
+  --jj-coral: #ff5b5b;
+  --jj-magenta: #d946ef;
+  --jj-purple: #6d28d9;
+
+  /* Surfaces */
+
+  --jj-background: #fafaf9;
+  --jj-surface: #ffffff;
+
+  /* Text */
+
+  --jj-text: #18181b;
+  --jj-muted: #71717a;
+
+  /* Borders */
+
+  --jj-border: #e4e4e7;
+}
+
+.jj-background {
+  background-color: var(--jj-background);
+}
+
+.jj-surface {
+  background-color: var(--jj-surface);
+}
+
+.jj-text {
+  color: var(--jj-text);
+}
+
+.jj-muted {
+  color: var(--jj-muted);
+}
+
+.jj-gradient {
+  background: linear-gradient(
+    90deg,
+    var(--jj-orange),
+    var(--jj-magenta),
+    var(--jj-purple)
+  );
+}

@@ -1,8 +1,13 @@
 defmodule JejakJatiWeb.PageControllerTest do
   use JejakJatiWeb.ConnCase
 
-  test "GET /", %{conn: conn} do
+  test "GET / zeigt die Jejak-Jati-Startseite", %{conn: conn} do
     conn = get(conn, ~p"/")
-    assert html_response(conn, 200) =~ "Peace of mind from prototype to production"
+
+    html = html_response(conn, 200)
+
+    assert html =~ "Jejak Jati"
+    assert html =~ "Evidenzbasierte Normdatenrecherche"
+    assert html =~ "Recherche starten"
   end
 end
