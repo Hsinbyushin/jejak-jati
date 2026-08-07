@@ -22,7 +22,7 @@ defmodule JejakJati.Research.SourceRequest do
     belongs_to :research_run, ResearchRun
 
     has_many :source_candidates, SourceCandidate
-    field :source, Ecto.Enum, values: [:dnb]
+    field :source, Ecto.Enum, values: [:dnb, :open_library]
 
     field :status, Ecto.Enum,
       values: [:pending, :running, :succeeded, :failed],

@@ -7,6 +7,7 @@ defmodule JejakJatiWeb.ResearchRunHTML do
   def status_label(:completed), do: "Abgeschlossen"
   def status_label(:failed), do: "Fehlgeschlagen"
   def source_label(:dnb), do: "Deutsche Nationalbibliothek"
+  def source_label(:open_library), do: "Open Library"
 
   def source_status_label(:pending), do: "Ausstehend"
   def source_status_label(:running), do: "Läuft"

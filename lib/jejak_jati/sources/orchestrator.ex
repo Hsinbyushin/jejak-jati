@@ -17,7 +17,8 @@ defmodule JejakJati.Sources.Orchestrator do
   alias JejakJati.Research.ResearchRun
 
   @default_sources [
-    JejakJati.Sources.DNB
+    JejakJati.Sources.DNB,
+    JejakJati.Sources.OpenLibrary
   ]
 
   @doc """

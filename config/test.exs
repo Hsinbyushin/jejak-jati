@@ -43,3 +43,7 @@ config :jejak_jati, Oban, testing: :manual
 config :jejak_jati,
        :dnb_req_options,
        plug: {Req.Test, JejakJati.Sources.DNB}
+
+config :jejak_jati,
+       :open_library_req_options,
+       plug: {Req.Test, JejakJati.Sources.OpenLibrary}
