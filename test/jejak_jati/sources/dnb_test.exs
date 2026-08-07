@@ -32,4 +32,8 @@ defmodule JejakJati.Sources.DNBTest do
     assert result.publisher == "University of Malaya Press"
     assert result.source_url == "https://d-nb.info/123456789"
   end
+
+  test "identifies itself as the DNB source" do
+    assert DNB.source_name() == :dnb
+  end
 end

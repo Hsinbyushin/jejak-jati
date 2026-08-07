@@ -19,6 +19,7 @@ defmodule JejakJati.Sources.DNB do
   results without having to understand SRU, CQL, MARC21, or DNB-specific
   conventions.
   """
+  @behaviour JejakJati.Sources.BibliographicSource
 
   import SweetXml
 
@@ -58,6 +59,9 @@ defmodule JejakJati.Sources.DNB do
     von
   )
 
+  @impl true
+  def source_name, do: :dnb
+
   @doc """
   Searches the DNB catalogue for a bibliographic work.
 
@@ -69,6 +73,9 @@ defmodule JejakJati.Sources.DNB do
 
   HTTP or protocol failures are returned as `{:error, reason}`.
   """
+
+  @impl true
+
   def search_work(title, author_name) do
     query = build_query(title, author_name)
 

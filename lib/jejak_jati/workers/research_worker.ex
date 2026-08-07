@@ -1,4 +1,8 @@
 defmodule JejakJati.Workers.ResearchWorker do
+  alias JejakJati.Bibliography.WorkMatcher
+  alias JejakJati.Research
+  alias JejakJati.Sources.Orchestrator
+
   @moduledoc """
   Executes the background research workflow for a single research run.
 
@@ -41,94 +45,106 @@ defmodule JejakJati.Workers.ResearchWorker do
     {:ok, research_run} =
       Research.update_research_run(research_run, %{status: :running})
 
+    :ok = run_bibliographic_research(research_run)
+
+    {:ok, _research_run} =
+      Research.update_research_run(research_run, %{status: :review})
+
+    :ok
+  end
+
+  defp run_bibliographic_research(research_run) do
+    research_run
+    |> Orchestrator.search()
+    |> Enum.each(fn source_result ->
+      process_source_result(research_run, source_result)
+    end)
+
+    :ok
+  end
+
+  defp process_source_result(
+         research_run,
+         %{source: source, result: {:ok, candidates}}
+       ) do
     {:ok, source_request} =
       Research.create_source_request(%{
         research_run_id: research_run.id,
-        source: :dnb,
+        source: source,
         status: :running
       })
 
-    run_dnb_research(research_run, source_request)
+    ranked =
+      WorkMatcher.rank(
+        candidates,
+        %{
+          title: research_run.title,
+          author_name: research_run.author_name,
+          isbn: research_run.isbn
+        }
+      )
+
+    Enum.each(ranked, fn match ->
+      persist_candidate(source_request, match)
+    end)
+
+    decision = WorkMatcher.classify(ranked)
+
+    best_score =
+      case ranked do
+        [%{score: score} | _] -> score
+        [] -> nil
+      end
+
+    {:ok, _source_request} =
+      Research.update_source_request(source_request, %{
+        status: :succeeded,
+        candidate_count: length(candidates),
+        best_score: best_score,
+        decision: decision
+      })
+
+    :ok
   end
 
-  defp run_dnb_research(research_run, source_request) do
-    alias JejakJati.Bibliography.WorkMatcher
-    alias JejakJati.Sources.DNB
+  defp process_source_result(
+         research_run,
+         %{source: source, result: {:error, reason}}
+       ) do
+    {:ok, _source_request} =
+      Research.create_source_request(%{
+        research_run_id: research_run.id,
+        source: source,
+        status: :failed,
+        candidate_count: 0,
+        error_message: inspect(reason)
+      })
 
-    case DNB.search_work(
-           research_run.title,
-           research_run.author_name
-         ) do
-      {:ok, candidates} ->
-        ranked =
-          WorkMatcher.rank(
-            candidates,
-            %{
-              title: research_run.title,
-              author_name: research_run.author_name,
-              isbn: research_run.isbn
-            }
-          )
+    :ok
+  end
 
-        Enum.each(ranked, fn match ->
-          result = match.result
+  defp persist_candidate(source_request, match) do
+    result = match.result
 
-          match_reasons =
-            Map.new(match.reasons, fn {reason, points} ->
-              {Atom.to_string(reason), points}
-            end)
+    match_reasons =
+      Map.new(match.reasons, fn {reason, points} ->
+        {Atom.to_string(reason), points}
+      end)
 
-          {:ok, _source_candidate} =
-            Research.create_source_candidate(%{
-              source_request_id: source_request.id,
-              source_id: result.source_id,
-              title: result.title,
-              author_name: result.author_name,
-              isbn: result.isbn,
-              publication_year: result.publication_year,
-              publisher: result.publisher,
-              source_url: result.source_url,
-              score: match.score,
-              match_reasons: match_reasons
-            })
-        end)
+    {:ok, _source_candidate} =
+      Research.create_source_candidate(%{
+        source_request_id: source_request.id,
+        source_id: result.source_id,
+        title: result.title,
+        author_name: result.author_name,
+        isbn: result.isbn,
+        publication_year: result.publication_year,
+        publisher: result.publisher,
+        source_url: result.source_url,
+        score: match.score,
+        match_reasons: match_reasons
+      })
 
-        decision = WorkMatcher.classify(ranked)
-
-        best_score =
-          case ranked do
-            [%{score: score} | _] -> score
-            [] -> nil
-          end
-
-        {:ok, _source_request} =
-          Research.update_source_request(source_request, %{
-            status: :succeeded,
-            candidate_count: length(candidates),
-            best_score: best_score,
-            decision: decision
-          })
-
-        {:ok, _research_run} =
-          Research.update_research_run(research_run, %{
-            status: :review
-          })
-
-        :ok
-
-      {:error, reason} ->
-        {:ok, _source_request} =
-          Research.update_source_request(source_request, %{
-            status: :failed,
-            error_message: inspect(reason)
-          })
-
-        {:ok, _research_run} =
-          Research.update_research_run(research_run, %{
-            status: :failed
-          })
-
-        {:error, reason}
-    end
+    :ok
   end
 end
