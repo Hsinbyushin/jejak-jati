@@ -12,6 +12,7 @@ defmodule JejakJati.Application do
       JejakJati.Repo,
       {DNSCluster, query: Application.get_env(:jejak_jati, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: JejakJati.PubSub},
+      {Oban, Application.fetch_env!(:jejak_jati, Oban)},
       # Start a worker by calling: JejakJati.Worker.start_link(arg)
       # {JejakJati.Worker, arg},
       # Start to serve requests, typically the last entry

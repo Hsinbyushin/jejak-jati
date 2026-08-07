@@ -49,10 +49,21 @@ defmodule JejakJati.Research do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_research_run(attrs) do
+  def create_research_run(attrs \\ %{}) do
     %ResearchRun{}
     |> ResearchRun.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, research_run} ->
+        %{research_run_id: research_run.id}
+        |> JejakJati.Workers.ResearchWorker.new()
+        |> Oban.insert()
+
+        {:ok, research_run}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   @doc """

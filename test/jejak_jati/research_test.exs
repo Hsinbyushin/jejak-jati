@@ -1,6 +1,8 @@
 defmodule JejakJati.ResearchTest do
   use JejakJati.DataCase
 
+  use Oban.Testing, repo: JejakJati.Repo
+
   alias JejakJati.Research
 
   describe "research_runs" do
@@ -76,6 +78,19 @@ defmodule JejakJati.ResearchTest do
     test "change_research_run/1 returns a research_run changeset" do
       research_run = research_run_fixture()
       assert %Ecto.Changeset{} = Research.change_research_run(research_run)
+    end
+
+    test "create_research_run/1 enqueues a research job" do
+      assert {:ok, research_run} =
+               Research.create_research_run(%{
+                 title: "In Search of Modernity",
+                 author_name: "Hadijah Rahmat"
+               })
+
+      assert_enqueued(
+        worker: JejakJati.Workers.ResearchWorker,
+        args: %{"research_run_id" => research_run.id}
+      )
     end
   end
 end
