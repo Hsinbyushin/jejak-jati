@@ -8,6 +8,7 @@ defmodule JejakJati.Research do
 
   alias JejakJati.Research.ResearchRun
   alias JejakJati.Research.SourceRequest
+  alias JejakJati.Research.SourceCandidate
 
   @doc """
   Returns the list of research_runs.
@@ -136,6 +137,27 @@ defmodule JejakJati.Research do
     SourceRequest
     |> where([request], request.research_run_id == ^research_run_id)
     |> order_by([request], asc: request.inserted_at)
+    |> preload([request],
+      source_candidates:
+        ^from(candidate in SourceCandidate,
+          order_by: [desc: candidate.score]
+        )
+    )
+    |> Repo.all()
+  end
+
+  def create_source_candidate(attrs) do
+    %SourceCandidate{}
+    |> SourceCandidate.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def list_source_candidates_for_request(source_request_id) do
+    import Ecto.Query
+
+    SourceCandidate
+    |> where([candidate], candidate.source_request_id == ^source_request_id)
+    |> order_by([candidate], desc: candidate.score)
     |> Repo.all()
   end
 end

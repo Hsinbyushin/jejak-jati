@@ -13,7 +13,7 @@ defmodule JejakJati.Research.SourceRequest do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias JejakJati.Research.ResearchRun
+  alias JejakJati.Research.{ResearchRun, SourceCandidate}
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -21,6 +21,7 @@ defmodule JejakJati.Research.SourceRequest do
   schema "source_requests" do
     belongs_to :research_run, ResearchRun
 
+    has_many :source_candidates, SourceCandidate
     field :source, Ecto.Enum, values: [:dnb]
 
     field :status, Ecto.Enum,

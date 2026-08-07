@@ -18,5 +18,12 @@ defmodule JejakJatiWeb.ResearchRunHTML do
   def decision_label(:no_match), do: "Kein belastbarer Treffer"
   def decision_label(nil), do: "Noch keine Bewertung"
 
+  def match_reason_label("isbn_exact"), do: "ISBN exakt"
+  def match_reason_label("title_exact"), do: "Titel exakt"
+  def match_reason_label("title_similarity"), do: "Titelähnlichkeit"
+  def match_reason_label("author_exact"), do: "Autor exakt"
+  def match_reason_label("author_similarity"), do: "Autorenähnlichkeit"
+
+  def match_reason_label(reason), do: reason
   embed_templates "research_run_html/*"
 end

@@ -70,6 +70,29 @@ defmodule JejakJati.Workers.ResearchWorker do
             }
           )
 
+        Enum.each(ranked, fn match ->
+          result = match.result
+
+          match_reasons =
+            Map.new(match.reasons, fn {reason, points} ->
+              {Atom.to_string(reason), points}
+            end)
+
+          {:ok, _source_candidate} =
+            Research.create_source_candidate(%{
+              source_request_id: source_request.id,
+              source_id: result.source_id,
+              title: result.title,
+              author_name: result.author_name,
+              isbn: result.isbn,
+              publication_year: result.publication_year,
+              publisher: result.publisher,
+              source_url: result.source_url,
+              score: match.score,
+              match_reasons: match_reasons
+            })
+        end)
+
         decision = WorkMatcher.classify(ranked)
 
         best_score =
