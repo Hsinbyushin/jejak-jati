@@ -18,6 +18,9 @@ defmodule JejakJatiWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    post "/research-runs", ResearchRunController, :create
+    get "/research-runs/:id", ResearchRunController, :show
   end
 
   # Other scopes may use custom stacks.

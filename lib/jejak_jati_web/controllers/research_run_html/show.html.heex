@@ -1,0 +1,47 @@
+<main class="min-h-screen bg-zinc-50 px-6 py-16 text-zinc-950">
+  <div class="mx-auto max-w-3xl">
+    <a
+      href={~p"/"}
+      class="text-sm font-medium text-violet-700 hover:text-violet-900"
+    >
+      ← Neue Recherche
+    </a>
+
+    <div class="mt-8 rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-fuchsia-700">
+        Recherche
+      </p>
+
+      <h1 class="mt-4 text-3xl font-semibold tracking-tight">
+        {@research_run.title}
+      </h1>
+
+      <p class="mt-2 text-lg text-zinc-600">
+        {@research_run.author_name}
+      </p>
+
+      <dl class="mt-8 grid gap-6 sm:grid-cols-2">
+        <div>
+          <dt class="text-sm font-medium text-zinc-500">Status</dt>
+          <dd class="mt-1 font-medium">
+            {status_label(@research_run.status)}
+          </dd>
+        </div>
+
+        <div>
+          <dt class="text-sm font-medium text-zinc-500">ISBN</dt>
+          <dd class="mt-1">
+            {@research_run.isbn || "—"}
+          </dd>
+        </div>
+
+        <div class="sm:col-span-2">
+          <dt class="text-sm font-medium text-zinc-500">Recherche-ID</dt>
+          <dd class="mt-1 font-mono text-sm text-zinc-700">
+            {@research_run.id}
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</main>

@@ -100,68 +100,64 @@
       </div>
 
       <div class="mx-auto mt-10 max-w-2xl rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
-        <form class="space-y-6">
+        <form
+          action={~p"/research-runs"}
+          method="post"
+          class="space-y-6"
+        >
+          <input
+            type="hidden"
+            name="_csrf_token"
+            value={get_csrf_token()}
+          />
+
           <div>
-            <label
-              for="title"
-              class="block text-sm font-medium text-zinc-800"
-            >
+            <label for="title" class="block text-sm font-medium text-zinc-800">
               Buchtitel
             </label>
 
             <input
               id="title"
-              name="title"
+              name="research_run[title]"
               type="text"
-              disabled
+              required
               placeholder="Titel des Werkes"
-              class="mt-2 block w-full rounded-xl border border-zinc-300 bg-zinc-100 px-4 py-3 text-zinc-500 shadow-sm"
+              class="mt-2 block w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 shadow-sm"
             />
           </div>
 
           <div>
-            <label
-              for="author_name"
-              class="block text-sm font-medium text-zinc-800"
-            >
+            <label for="author_name" class="block text-sm font-medium text-zinc-800">
               Autorin oder Autor
             </label>
 
             <input
               id="author_name"
-              name="author_name"
+              name="research_run[author_name]"
               type="text"
-              disabled
+              required
               placeholder="Name der Person"
-              class="mt-2 block w-full rounded-xl border border-zinc-300 bg-zinc-100 px-4 py-3 text-zinc-500 shadow-sm"
+              class="mt-2 block w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 shadow-sm"
             />
           </div>
 
           <div>
-            <label
-              for="isbn"
-              class="block text-sm font-medium text-zinc-800"
-            >
-              ISBN
-              <span class="font-normal text-zinc-400">
-                optional
-              </span>
+            <label for="isbn" class="block text-sm font-medium text-zinc-800">
+              ISBN <span class="font-normal text-zinc-400">optional</span>
             </label>
 
             <input
               id="isbn"
-              name="isbn"
+              name="research_run[isbn]"
               type="text"
-              disabled
               placeholder="978-..."
-              class="mt-2 block w-full rounded-xl border border-zinc-300 bg-zinc-100 px-4 py-3 text-zinc-500 shadow-sm"
+              class="mt-2 block w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 shadow-sm"
             />
           </div>
 
           <button
-            type="button"
-            disabled
-            class="w-full rounded-xl bg-zinc-300 px-5 py-3.5 text-sm font-semibold text-white"
+            type="submit"
+            class="w-full rounded-xl bg-gradient-to-r from-orange-500 via-pink-600 to-violet-700 px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
           >
             Recherche starten
           </button>
