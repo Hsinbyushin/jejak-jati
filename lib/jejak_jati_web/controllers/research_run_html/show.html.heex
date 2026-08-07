@@ -22,26 +22,40 @@
 
       <dl class="mt-8 grid gap-6 sm:grid-cols-2">
         <div>
-          <dt class="text-sm font-medium text-zinc-500">Status</dt>
+          <dt class="text-sm font-medium text-zinc-500">
+            Status
+          </dt>
+
           <dd class="mt-1 font-medium">
             {status_label(@research_run.status)}
           </dd>
         </div>
 
         <div>
-          <dt class="text-sm font-medium text-zinc-500">ISBN</dt>
+          <dt class="text-sm font-medium text-zinc-500">
+            ISBN
+          </dt>
+
           <dd class="mt-1">
             {@research_run.isbn || "—"}
           </dd>
         </div>
 
         <div class="sm:col-span-2">
-          <dt class="text-sm font-medium text-zinc-500">Recherche-ID</dt>
+          <dt class="text-sm font-medium text-zinc-500">
+            Recherche-ID
+          </dt>
+
           <dd class="mt-1 font-mono text-sm text-zinc-700">
             {@research_run.id}
           </dd>
         </div>
       </dl>
     </div>
+
+    <.sources_fragment
+      research_run={@research_run}
+      source_requests={@source_requests}
+    />
   </div>
 </main>

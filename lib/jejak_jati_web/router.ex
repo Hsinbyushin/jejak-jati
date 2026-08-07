@@ -21,6 +21,10 @@ defmodule JejakJatiWeb.Router do
 
     post "/research-runs", ResearchRunController, :create
     get "/research-runs/:id", ResearchRunController, :show
+
+    get "/research-runs/:id/fragments/sources",
+        ResearchRunController,
+        :sources_fragment
   end
 
   # Other scopes may use custom stacks.

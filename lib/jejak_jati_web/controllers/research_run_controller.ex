@@ -21,6 +21,25 @@ defmodule JejakJatiWeb.ResearchRunController do
   def show(conn, %{"id" => id}) do
     research_run = Research.get_research_run!(id)
 
-    render(conn, :show, research_run: research_run)
+    source_requests =
+      Research.list_source_requests_for_run(research_run.id)
+
+    render(conn, :show,
+      research_run: research_run,
+      source_requests: source_requests
+    )
+  end
+
+  def sources_fragment(conn, %{"id" => id}) do
+    research_run = Research.get_research_run!(id)
+
+    source_requests =
+      Research.list_source_requests_for_run(research_run.id)
+
+    render(conn, :sources_fragment,
+      layout: false,
+      research_run: research_run,
+      source_requests: source_requests
+    )
   end
 end
