@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<searchRetrieveResponse xmlns="http://www.loc.gov/zing/srw/">
+  <version>1.1</version>
+  <numberOfRecords>1</numberOfRecords>
+  <records>
+    <record>
+      <recordData>
+        <record xmlns="http://www.loc.gov/MARC21/slim">
+          <leader>00000nam a2200000 c 4500</leader>
+
+          <controlfield tag="001">123456789</controlfield>
+
+          <datafield tag="020" ind1=" " ind2=" ">
+            <subfield code="a">9789832085010</subfield>
+          </datafield>
+
+          <datafield tag="100" ind1="1" ind2=" ">
+            <subfield code="a">Rahmat, Hadijah</subfield>
+          </datafield>
+
+          <datafield tag="245" ind1="1" ind2="0">
+            <subfield code="a">In Search of Modernity /</subfield>
+          </datafield>
+
+          <datafield tag="264" ind1=" " ind2="1">
+            <subfield code="b">University of Malaya Press</subfield>
+            <subfield code="c">2001</subfield>
+          </datafield>
+        </record>
+      </recordData>
+    </record>
+  </records>
+</searchRetrieveResponse>

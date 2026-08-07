@@ -7,6 +7,7 @@ defmodule JejakJati.Research do
   alias JejakJati.Repo
 
   alias JejakJati.Research.ResearchRun
+  alias JejakJati.Research.SourceRequest
 
   @doc """
   Returns the list of research_runs.
@@ -111,5 +112,30 @@ defmodule JejakJati.Research do
   """
   def change_research_run(%ResearchRun{} = research_run, attrs \\ %{}) do
     ResearchRun.changeset(research_run, attrs)
+  end
+
+  def create_source_request(attrs) do
+    %SourceRequest{}
+    |> SourceRequest.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_source_request(%SourceRequest{} = source_request, attrs) do
+    source_request
+    |> SourceRequest.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def get_source_request!(id) do
+    Repo.get!(SourceRequest, id)
+  end
+
+  def list_source_requests_for_run(research_run_id) do
+    import Ecto.Query
+
+    SourceRequest
+    |> where([request], request.research_run_id == ^research_run_id)
+    |> order_by([request], asc: request.inserted_at)
+    |> Repo.all()
   end
 end

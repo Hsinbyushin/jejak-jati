@@ -36,61 +36,76 @@ defmodule JejakJati.Workers.ResearchWorker do
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"research_run_id" => id}}) do
-    # Oban serializes job arguments as JSON. Consequently, argument keys
-    # arrive as strings even if atoms were used when the job was created.
-    #
-    # We store only the ResearchRun ID in the job rather than copying the
-    # title, author name, ISBN, or future research metadata into Oban.
-    # The ResearchRun in our own database remains the source of truth.
     research_run = Research.get_research_run!(id)
 
-    # Mark the research run as actively being processed.
-    #
-    # Later, the UI can use this state to tell the user that background
-    # research is currently in progress.
     {:ok, research_run} =
       Research.update_research_run(research_run, %{status: :running})
 
-    # ------------------------------------------------------------------
-    # Research pipeline
-    # ------------------------------------------------------------------
-    #
-    # This is intentionally empty for now.
-    #
-    # Future versions of this worker (or workers orchestrated by it) will
-    # perform operations such as:
-    #
-    #   * searching bibliographic sources for the supplied publication,
-    #   * searching authority files for possible person matches,
-    #   * collecting source-backed evidence,
-    #   * identifying conflicting claims,
-    #   * ranking identity candidates,
-    #   * preparing a proposed authority record for human review.
-    #
-    # Keeping this placeholder explicit makes an important architectural
-    # distinction:
-    #
-    #   ResearchRun  -> represents the research request and its state
-    #   Oban Job     -> represents reliable execution of background work
-    #   Evidence     -> will represent facts discovered during research
-    #
-    # Those concepts should remain separate even as the application grows.
+    {:ok, source_request} =
+      Research.create_source_request(%{
+        research_run_id: research_run.id,
+        source: :dnb,
+        status: :running
+      })
 
-    # The infrastructure-only worker currently considers the automated
-    # research phase complete immediately. It therefore moves the run into
-    # `review`.
-    #
-    # `review` deliberately does not mean "completed". Jejak Jati is intended
-    # to produce evidence-backed proposals that a human can inspect before
-    # accepting an authority record.
-    {:ok, _research_run} =
-      Research.update_research_run(research_run, %{status: :review})
+    run_dnb_research(research_run, source_request)
+  end
 
-    # Returning :ok tells Oban that the job completed successfully.
-    #
-    # If an exception is raised above, or if we later return an error in a
-    # form understood by Oban, Oban can record the failure and retry the job
-    # according to the worker configuration.
-    :ok
+  defp run_dnb_research(research_run, source_request) do
+    alias JejakJati.Bibliography.WorkMatcher
+    alias JejakJati.Sources.DNB
+
+    case DNB.search_work(
+           research_run.title,
+           research_run.author_name
+         ) do
+      {:ok, candidates} ->
+        ranked =
+          WorkMatcher.rank(
+            candidates,
+            %{
+              title: research_run.title,
+              author_name: research_run.author_name,
+              isbn: research_run.isbn
+            }
+          )
+
+        decision = WorkMatcher.classify(ranked)
+
+        best_score =
+          case ranked do
+            [%{score: score} | _] -> score
+            [] -> nil
+          end
+
+        {:ok, _source_request} =
+          Research.update_source_request(source_request, %{
+            status: :succeeded,
+            candidate_count: length(candidates),
+            best_score: best_score,
+            decision: decision
+          })
+
+        {:ok, _research_run} =
+          Research.update_research_run(research_run, %{
+            status: :review
+          })
+
+        :ok
+
+      {:error, reason} ->
+        {:ok, _source_request} =
+          Research.update_source_request(source_request, %{
+            status: :failed,
+            error_message: inspect(reason)
+          })
+
+        {:ok, _research_run} =
+          Research.update_research_run(research_run, %{
+            status: :failed
+          })
+
+        {:error, reason}
+    end
   end
 end

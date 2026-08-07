@@ -1,4 +1,5 @@
 defmodule JejakJati.Research.ResearchRun do
+  alias JejakJati.Research.SourceRequest
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -12,6 +13,8 @@ defmodule JejakJati.Research.ResearchRun do
     field :status, Ecto.Enum,
       values: [:pending, :running, :review, :completed, :failed],
       default: :pending
+
+    has_many :source_requests, SourceRequest
 
     timestamps(type: :utc_datetime)
   end

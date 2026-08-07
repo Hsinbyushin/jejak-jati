@@ -39,3 +39,7 @@ config :phoenix,
   sort_verified_routes_query_params: true
 
 config :jejak_jati, Oban, testing: :manual
+
+config :jejak_jati,
+       :dnb_req_options,
+       plug: {Req.Test, JejakJati.Sources.DNB}
