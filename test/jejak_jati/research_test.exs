@@ -91,6 +91,12 @@ defmodule JejakJati.ResearchTest do
         worker: JejakJati.Workers.ResearchWorker,
         args: %{"research_run_id" => research_run.id}
       )
+
+      assert research_run.person_id
+
+      person = Research.get_person!(research_run.person_id)
+
+      assert person.preferred_name == "Hadijah Rahmat"
     end
   end
 

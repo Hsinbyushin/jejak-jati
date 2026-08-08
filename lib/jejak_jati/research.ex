@@ -54,18 +54,41 @@ defmodule JejakJati.Research do
 
   """
   def create_research_run(attrs \\ %{}) do
-    %ResearchRun{}
-    |> ResearchRun.changeset(attrs)
-    |> Repo.insert()
+    author_name = Map.get(attrs, "author_name") || Map.get(attrs, :author_name)
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(
+      :person,
+      Person.changeset(%Person{}, %{
+        preferred_name: author_name
+      })
+    )
+    |> Ecto.Multi.insert(
+      :research_run,
+      fn %{person: person} ->
+        attrs =
+          if Enum.all?(Map.keys(attrs), &is_binary/1) do
+            Map.put(attrs, "person_id", person.id)
+          else
+            Map.put(attrs, :person_id, person.id)
+          end
+
+        ResearchRun.changeset(%ResearchRun{}, attrs)
+      end
+    )
+    |> Repo.transaction()
     |> case do
-      {:ok, research_run} ->
+      {:ok, %{research_run: research_run}} ->
         %{research_run_id: research_run.id}
         |> JejakJati.Workers.ResearchWorker.new()
         |> Oban.insert()
 
         {:ok, research_run}
 
-      {:error, changeset} ->
+      {:error, :research_run, changeset, _changes} ->
+        {:error, changeset}
+
+      {:error, :person, changeset, _changes} ->
         {:error, changeset}
     end
   end

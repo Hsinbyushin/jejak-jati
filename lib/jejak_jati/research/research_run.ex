@@ -24,7 +24,7 @@ defmodule JejakJati.Research.ResearchRun do
   @doc false
   def changeset(research_run, attrs) do
     research_run
-    |> cast(attrs, [:title, :author_name, :isbn, :status])
+    |> cast(attrs, [:title, :author_name, :isbn, :status, :person_id])
     |> validate_required([:title, :author_name])
     |> validate_length(:title, min: 1, max: 500)
     |> validate_length(:author_name, min: 1, max: 250)
