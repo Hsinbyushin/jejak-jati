@@ -27,4 +27,18 @@ defmodule JejakJatiWeb.ResearchRunHTML do
 
   def match_reason_label(reason), do: reason
   embed_templates "research_run_html/*"
+
+  def reconciliation_decision_label(:same_work), do: "Wahrscheinlich dasselbe Werk"
+  def reconciliation_decision_label(:review), do: "Manuelle Prüfung erforderlich"
+  def reconciliation_decision_label(:different_work), do: "Unterschiedliche Werke"
+
+  def reconciliation_reason_label("isbn_exact"),
+    do: "ISBN identisch"
+
+  def reconciliation_reason_label("title_exact"), do: "Titel identisch"
+  def reconciliation_reason_label("title_similarity"), do: "Titelähnlichkeit"
+  def reconciliation_reason_label("author_exact"), do: "Autor identisch"
+  def reconciliation_reason_label("author_similarity"), do: "Autorenähnlichkeit"
+  def reconciliation_reason_label("publication_year_exact"), do: "Erscheinungsjahr identisch"
+  def reconciliation_reason_label(reason), do: reason
 end

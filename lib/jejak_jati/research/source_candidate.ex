@@ -17,6 +17,19 @@ defmodule JejakJati.Research.SourceCandidate do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
+  @type t :: %__MODULE__{
+          id: Ecto.UUID.t() | nil,
+          source_request_id: Ecto.UUID.t() | nil,
+          source_id: String.t() | nil,
+          title: String.t() | nil,
+          author_name: String.t() | nil,
+          isbn: String.t() | nil,
+          publication_year: String.t() | nil,
+          publisher: String.t() | nil,
+          source_url: String.t() | nil,
+          score: non_neg_integer(),
+          match_reasons: map()
+        }
 
   schema "source_candidates" do
     belongs_to :source_request, SourceRequest

@@ -2,6 +2,7 @@ defmodule JejakJati.Workers.ResearchWorker do
   alias JejakJati.Bibliography.WorkMatcher
   alias JejakJati.Research
   alias JejakJati.Sources.Orchestrator
+  alias JejakJati.Reconciliation.WorkReconciler
 
   @moduledoc """
   Executes the background research workflow for a single research run.
@@ -36,8 +37,6 @@ defmodule JejakJati.Workers.ResearchWorker do
     # indefinitely.
     max_attempts: 3
 
-  alias JejakJati.Research
-
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"research_run_id" => id}}) do
     research_run = Research.get_research_run!(id)
@@ -58,6 +57,30 @@ defmodule JejakJati.Workers.ResearchWorker do
     |> Orchestrator.search()
     |> Enum.each(fn source_result ->
       process_source_result(research_run, source_result)
+    end)
+
+    source_requests =
+      Research.list_source_requests_for_run(research_run.id)
+
+    reconciliations =
+      source_requests
+      |> WorkReconciler.reconcile()
+      |> Enum.filter(&WorkReconciler.relevant?/1)
+
+    Enum.each(reconciliations, fn reconciliation ->
+      reasons =
+        Map.new(reconciliation.reasons, fn {reason, points} ->
+          {Atom.to_string(reason), points}
+        end)
+
+      {:ok, _work_reconciliation} =
+        Research.create_work_reconciliation(%{
+          left_candidate_id: reconciliation.left.id,
+          right_candidate_id: reconciliation.right.id,
+          score: reconciliation.score,
+          decision: reconciliation.decision,
+          reasons: reasons
+        })
     end)
 
     :ok

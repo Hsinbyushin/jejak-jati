@@ -15,6 +15,7 @@ defmodule JejakJati.Bibliography.WorkMatcher do
   """
 
   alias JejakJati.Sources.WorkResult
+  alias JejakJati.Bibliography.ISBN
 
   @type reason ::
           {:isbn_exact, non_neg_integer()}
@@ -63,7 +64,7 @@ defmodule JejakJati.Bibliography.WorkMatcher do
   defp maybe_score_isbn(reasons, _candidate_isbn, nil), do: reasons
 
   defp maybe_score_isbn(reasons, candidate_isbn, query_isbn) do
-    if normalize_isbn(candidate_isbn) == normalize_isbn(query_isbn) do
+    if ISBN.equivalent?(candidate_isbn, query_isbn) do
       [{:isbn_exact, 100} | reasons]
     else
       reasons
@@ -138,12 +139,6 @@ defmodule JejakJati.Bibliography.WorkMatcher do
     |> String.split(~r/\s+/u, trim: true)
     |> Enum.sort()
     |> Enum.join(" ")
-  end
-
-  defp normalize_isbn(value) do
-    value
-    |> String.replace(~r/[^0-9Xx]/u, "")
-    |> String.upcase()
   end
 
   # Jaccard similarity gives us a simple and explainable measure of how many

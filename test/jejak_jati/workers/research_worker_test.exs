@@ -108,5 +108,19 @@ defmodule JejakJati.Workers.ResearchWorkerTest do
     assert open_library_candidate.match_reasons["title_exact"] == 60
     assert open_library_candidate.match_reasons["author_exact"] == 40
     assert open_library_candidate.match_reasons["isbn_exact"] == 100
+
+    reconciliations =
+      Research.list_work_reconciliations_for_run(research_run.id)
+
+    assert length(reconciliations) == 1
+
+    [reconciliation] = reconciliations
+
+    assert reconciliation.decision == :same_work
+    assert reconciliation.score == 210
+    assert reconciliation.reasons["isbn_exact"] == 100
+    assert reconciliation.reasons["title_exact"] == 60
+    assert reconciliation.reasons["author_exact"] == 40
+    assert reconciliation.reasons["publication_year_exact"] == 10
   end
 end

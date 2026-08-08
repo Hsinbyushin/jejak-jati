@@ -24,9 +24,13 @@ defmodule JejakJatiWeb.ResearchRunController do
     source_requests =
       Research.list_source_requests_for_run(research_run.id)
 
+    work_reconciliations =
+      Research.list_work_reconciliations_for_run(research_run.id)
+
     render(conn, :show,
       research_run: research_run,
-      source_requests: source_requests
+      source_requests: source_requests,
+      work_reconciliations: work_reconciliations
     )
   end
 
@@ -36,10 +40,14 @@ defmodule JejakJatiWeb.ResearchRunController do
     source_requests =
       Research.list_source_requests_for_run(research_run.id)
 
+    work_reconciliations =
+      Research.list_work_reconciliations_for_run(research_run.id)
+
     render(conn, :sources_fragment,
       layout: false,
       research_run: research_run,
-      source_requests: source_requests
+      source_requests: source_requests,
+      work_reconciliations: work_reconciliations
     )
   end
 end

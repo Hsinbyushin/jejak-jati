@@ -9,6 +9,7 @@ defmodule JejakJati.Research do
   alias JejakJati.Research.ResearchRun
   alias JejakJati.Research.SourceRequest
   alias JejakJati.Research.SourceCandidate
+  alias JejakJati.Research.WorkReconciliation
 
   @doc """
   Returns the list of research_runs.
@@ -158,6 +159,26 @@ defmodule JejakJati.Research do
     SourceCandidate
     |> where([candidate], candidate.source_request_id == ^source_request_id)
     |> order_by([candidate], desc: candidate.score)
+    |> Repo.all()
+  end
+
+  def create_work_reconciliation(attrs \\ %{}) do
+    %WorkReconciliation{}
+    |> WorkReconciliation.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def list_work_reconciliations_for_run(research_run_id) do
+    from(wr in WorkReconciliation,
+      join: left in assoc(wr, :left_candidate),
+      join: left_request in assoc(left, :source_request),
+      where: left_request.research_run_id == ^research_run_id,
+      order_by: [desc: wr.score],
+      preload: [
+        left_candidate: :source_request,
+        right_candidate: :source_request
+      ]
+    )
     |> Repo.all()
   end
 end
