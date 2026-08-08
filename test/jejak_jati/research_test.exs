@@ -93,4 +93,36 @@ defmodule JejakJati.ResearchTest do
       )
     end
   end
+
+  describe "people" do
+    test "creates a person" do
+      assert {:ok, person} =
+               Research.create_person(%{
+                 preferred_name: "Hadijah Rahmat",
+                 birth_year: 1958
+               })
+
+      assert person.preferred_name == "Hadijah Rahmat"
+      assert person.birth_year == 1958
+      assert person.death_year == nil
+    end
+
+    test "requires a preferred name" do
+      assert {:error, changeset} =
+               Research.create_person(%{})
+
+      assert "can't be blank" in errors_on(changeset).preferred_name
+    end
+
+    test "rejects a death year earlier than the birth year" do
+      assert {:error, changeset} =
+               Research.create_person(%{
+                 preferred_name: "Example Person",
+                 birth_year: 1980,
+                 death_year: 1970
+               })
+
+      assert "must not be earlier than birth year" in errors_on(changeset).death_year
+    end
+  end
 end

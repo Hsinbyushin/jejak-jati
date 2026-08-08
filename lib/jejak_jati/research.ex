@@ -10,6 +10,7 @@ defmodule JejakJati.Research do
   alias JejakJati.Research.SourceRequest
   alias JejakJati.Research.SourceCandidate
   alias JejakJati.Research.WorkReconciliation
+  alias JejakJati.Research.Person
 
   @doc """
   Returns the list of research_runs.
@@ -180,5 +181,19 @@ defmodule JejakJati.Research do
       ]
     )
     |> Repo.all()
+  end
+
+  def create_person(attrs \\ %{}) do
+    %Person{}
+    |> Person.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def get_person!(id) do
+    Repo.get!(Person, id)
+  end
+
+  def list_people do
+    Repo.all(Person)
   end
 end

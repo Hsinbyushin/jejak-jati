@@ -1,5 +1,6 @@
 defmodule JejakJati.Research.ResearchRun do
   alias JejakJati.Research.SourceRequest
+  alias JejakJati.Research.Person
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -15,6 +16,7 @@ defmodule JejakJati.Research.ResearchRun do
       default: :pending
 
     has_many :source_requests, SourceRequest
+    belongs_to :person, Person
 
     timestamps(type: :utc_datetime)
   end
